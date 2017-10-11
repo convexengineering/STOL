@@ -31,19 +31,19 @@ for s in sto:
     if len(sto) < 6:
         W = Bst.sample_at(R)("W")
         Axrw.plot(R, W, color="k", linestyle=st[i],
-                  label="$S_{} = %d [ft]$" % s)
+                  label="$S_{TO} = %d [ft]$" % s)
         i += 1
 
     stosens = Bst.solarray["sensitivities"]["constants"]["S_{TO}"]
     f = interp1d(stosens, Bst.solarray("R"), "cubic")
     Rknee.extend([f(-0.8)])
 
-
-Ax.plot(sto, Rknee)
-Ax.set_xlabel("Take off Distance [ft]")
-Ax.set_ylabel("Range [nmi]")
-Ax.grid()
-Fig.savefig("rangetod.pdf")
+if len(sto) > 6:
+    Ax.plot(sto, Rknee)
+    Ax.set_xlabel("Take off Distance [ft]")
+    Ax.set_ylabel("Range [nmi]")
+    Ax.grid()
+    Fig.savefig("rangetod.pdf")
 
 if len(sto) < 6:
     Axrw.set_ylabel("Max Takeoff Weight [lbf]")

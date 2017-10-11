@@ -3,7 +3,6 @@ from numpy import pi
 from gpkit import Variable, Model
 from takeoff import TakeOff
 from flightstate import FlightState
-from stol_aircraft import simpleAircraft
 # pylint: disable=too-many-locals, invalid-name, unused-variable
 
 class Aircraft(Model):
