@@ -42,6 +42,7 @@ class simpleAircraft(Model):
                            "structural weight fraction")
         Wstruct     = Variable("W_{struct}", "lbf", "structural weight")
         b 			= Variable("b", "ft", "Wing span")
+        CL_max      = Variable("C_{L_{max, land}}", 3.5,"-", "Landing CL_max")
         constraints = [W >= Wbatt + Wpay + Wwing + Wmotor + Wstruct,
                        Wstruct >= fstruct*W,
                        Wwing >= WS*S,
