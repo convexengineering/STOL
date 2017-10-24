@@ -29,10 +29,11 @@ class TakeOff(Model):
         CDg = Variable("C_{D_g}", "-", "grag ground coefficient")
         Kg = Variable("K_g", 0.04, "-", "ground-effect induced drag parameter")
         CLmax = Variable("C_{L_{TO}}", 2.4, "-", "max lift coefficient")
+
         Vstall = Variable("V_{stall}", "m/s", "stall velocity")
 
         zsto = Variable("z_{S_{TO}}", "-", "take off distance helper variable")
-        Sto = Variable("S_{TO}", "ft", "take off distance")
+        Sto = Variable("S_{TO}", 300, "ft", "take off distance")
         etaprop = Variable("\\eta_{prop}", 0.8, "-", "propellor efficiency")
         mfac = Variable("m_{fac}", 1.2, "-", "TO runway margin")
 
