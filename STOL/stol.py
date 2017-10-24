@@ -27,6 +27,7 @@ class Aircraft(Model):
         fstruct = Variable("f_{struct}", 0.5, "-",
                            "structural weight fraction")
         Wstruct = Variable("W_{struct}", "lbf", "structural weight")
+        e = Variable("e", 0.8, "-", "span efficiency factor")
 
         constraints = [W >= Wbatt + Wpay + Wwing + Wmotor + Wstruct,
                        Wstruct >= fstruct*W,
@@ -80,21 +81,23 @@ class Mission(Model):
     " creates aircraft and flies it around "
     def setup(self):
 
+        Srunway = Variable("S_{runway}", "ft", "runway length")
 
-        aircraft = simpleAircraft()
+        aircraft = Aircraft()
 
         takeoff = TakeOff(aircraft)
         cruise = Cruise(aircraft)
-        landing = Landing(aircraft, sp = True)
+        landing = Landing(aircraft, sp=False)
 
-        constraints = [aircraft["P_{shaft-max}"] >= cruise["P_{shaft}"]]
+        constraints = [aircraft["P_{shaft-max}"] >= cruise["P_{shaft}"],
+                       Srunway >= takeoff["S_{TO}"],
+                       Srunway >= landing["S_{land}"]]
 
         return constraints, aircraft, takeoff, cruise, landing
 
 if __name__ == "__main__":
     M = Mission()
-    M.substitutions.update({"S_{TO}":300,
-                            "S_{land}":150})
+    M.substitutions.update({"S_{runway}": 300})
     M.cost = M["W"]
     #sol = M.debug("mosek")
     sol = M.localsolve("mosek")

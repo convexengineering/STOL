@@ -19,7 +19,7 @@ class HelioCourier(Model):
         S           = Variable("S", 220,"ft**2", "wing planform area")
         CL_max      = Variable("C_{L_{max, land}}", 3.5,"-", "Landing CL_max")
         Pshaftmax   = Variable("P_{shaft-max}", 350., "hp", "Maximum shaft power")
-        return []       
+        return []
 
 class simpleAircraft(Model):
     " thing that we want to build "
