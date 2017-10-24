@@ -6,6 +6,8 @@ from gpkit import Variable, Model, SignomialsEnabled
 from gpkitmodels.GP.aircraft.wing.wing import Wing
 from gpfit.fit_constraintset import FitCS
 from flightstate import FlightState
+from landing import Landing
+
 # pylint: disable=too-many-locals, invalid-name, unused-variable
 
 class Aircraft(Model):
@@ -29,8 +31,7 @@ class Aircraft(Model):
         fstruct = Variable("f_{struct}", 0.2, "-",
                            "structural weight fraction")
         Wstruct = Variable("W_{struct}", "lbf", "structural weight")
-        b = Variable("b", "ft", "Wing span")
-
+        e = Variable("e", 0.8, "-", "span efficiency factor")
 
         constraints = [
             W >= Wbatt + Wpay + self.wing.topvar("W") + Wmotor + Wstruct,
@@ -90,14 +91,19 @@ class Mission(Model):
     " creates aircraft and flies it around "
     def setup(self):
 
-        self.aircraft = Aircraft()
+        Srunway = Variable("S_{runway}", "ft", "runway length")
 
-        takeoff = TakeOff(self.aircraft)
-        cruise = Cruise(self.aircraft)
+        aircraft = Aircraft()
 
-        constraints = [self.aircraft["P_{shaft-max}"] >= cruise["P_{shaft}"]]
+        takeoff = TakeOff(aircraft)
+        cruise = Cruise(aircraft)
+        landing = Landing(aircraft, sp=False)
 
-        return constraints, self.aircraft, takeoff, cruise
+        constraints = [aircraft["P_{shaft-max}"] >= cruise["P_{shaft}"],
+                       Srunway >= takeoff["S_{TO}"],
+                       Srunway >= landing["S_{land}"]]
+
+        return constraints, aircraft, takeoff, cruise, landing
 
 class TakeOff(Model):
     """
@@ -156,8 +162,10 @@ class TakeOff(Model):
 
         return constraints, fs
 
-if __name__ == "__main__":
+  if __name__ == "__main__":
     M = Mission()
-    M.cost = M.aircraft.topvar("W")
-    sol = M.solve("mosek")
+    M.substitutions.update({"S_{runway}": 300})
+    M.cost = M["W"]
+    #sol = M.debug("mosek")
+    sol = M.localsolve("mosek")
     print sol.table()
