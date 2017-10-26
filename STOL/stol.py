@@ -7,6 +7,7 @@ from gpkitmodels.GP.aircraft.wing.wing import Wing
 from gpfit.fit_constraintset import FitCS
 from flightstate import FlightState
 from landing import Landing
+from gpkit.constraints.tight import Tight as TCS
 
 # pylint: disable=too-many-locals, invalid-name, unused-variable
 
@@ -32,12 +33,14 @@ class Aircraft(Model):
                            "structural weight fraction")
         Wstruct = Variable("W_{struct}", "lbf", "structural weight")
         e = Variable("e", 0.8, "-", "span efficiency factor")
+        bmax = Variable("b", 50, "ft", "span constraint")
 
         constraints = [
-            W >= Wbatt + Wpay + self.wing.topvar("W") + Wmotor + Wstruct,
+            TCS([W >= Wbatt + Wpay + self.wing.topvar("W") + Wmotor + Wstruct]),
             Wcent >= Wbatt + Wpay + Wmotor + Wstruct,
             Wstruct >= fstruct*W,
             Wmotor >= Pshaftmax/sp_motor,
+            self.wing["b"] <= bmax
             ]
 
         loading = self.wing.loading(self.wing, Wcent)
@@ -59,7 +62,7 @@ class AircraftPerf(Model):
         self.wing.substitutions["C_{L_{stall}}"] = 5
 
         CD = Variable("C_D", "-", "drag coefficient")
-        cda = Variable("CDA", 0.024, "-", "non-lifting drag coefficient")
+        cda = Variable("CDA", 0.015, "-", "non-lifting drag coefficient")
 
         constraints = [CD >= cda + self.wing["C_d"]]
 
@@ -70,11 +73,11 @@ class Cruise(Model):
     def setup(self, aircraft):
 
         perf = aircraft.flight_model()
-        perf.fs.substitutions["V"] = 150
 
         R = Variable("R", 200, "nmi", "aircraft range")
         g = Variable("g", 9.81, "m/s**2", "gravitational constant")
         T = Variable("T", "lbf", "thrust")
+        Vmin = Variable("V_{min}", 120, "kts", "min speed")
         Pshaft = Variable("P_{shaft}", "W", "shaft power")
         etaprop = Variable("\\eta_{prop}", 0.8, "-", "propellor efficiency")
 
@@ -83,10 +86,34 @@ class Cruise(Model):
                                      * aircraft["S"]*perf["V"]**2),
             T >= 0.5*perf["C_D"]*perf["\\rho"]*aircraft.wing["S"]*perf["V"]**2,
             Pshaft >= T*perf["V"]/etaprop,
+            perf.fs["V"] >= Vmin,
             R <= (aircraft["h_{batt}"]*aircraft["W_{batt}"]/g
                   * aircraft["\\eta_{e}"]*perf["V"]/Pshaft)]
 
         return constraints, perf
+
+class LandingSimple(Model):
+    def setup(self, aircraft):
+
+        fs = FlightState()
+
+        g = Variable("g", 9.81, "m/s**2", "gravitational constant")
+        gload = Variable("g_{loading}", 1.0, "-", "gloading constant")
+        Vstall = Variable("V_{stall}", "knots", "stall velocity")
+        Sgr = Variable("S_{gr}", "ft", "landing ground roll")
+        Slnd = Variable("S_{land}", "ft", "landing distance")
+        msafety = Variable("m_{fac}", 1.4, "-", "Landing safety margin")
+        CLland = Variable("C_{L_{land}}", 3.5, "-", "landing CL")
+
+        constraints = [
+            Sgr >= 0.5*fs["V"]**2/gload/g,
+            Vstall == (2.*aircraft.topvar("W")/fs["\\rho"]/aircraft["S"]
+                       / CLland)**0.5,
+            fs["V"] >= 1.2*Vstall,
+            Slnd >= msafety*Sgr
+            ]
+
+        return constraints, fs
 
 class Mission(Model):
     " creates aircraft and flies it around "
@@ -105,6 +132,10 @@ class Mission(Model):
 
         if sp:
             landing = Landing(self.aircraft)
+            constraints.extend([Srunway >= landing["S_{land}"]])
+            mission.extend([landing])
+        else:
+            landing = LandingSimple(self.aircraft)
             constraints.extend([Srunway >= landing["S_{land}"]])
             mission.extend([landing])
 
@@ -132,14 +163,15 @@ class TakeOff(Model):
         cdp = Variable("c_{d_{p_{stall}}}", 0.025, "-",
                        "profile drag at Vstallx1.2")
         Kg = Variable("K_g", 0.04, "-", "ground-effect induced drag parameter")
-        CLto = Variable("C_{L_{TO}}", 3.4, "-", "max lift coefficient")
+        CLto = Variable("C_{L_{TO}}", 3.5, "-", "max lift coefficient")
         Vstall = Variable("V_{stall}", "knots", "stall velocity")
         e = Variable("e", 0.8, "-", "span efficiency")
 
         zsto = Variable("z_{S_{TO}}", "-", "take off distance helper variable")
         Sto = Variable("S_{TO}", "ft", "take off distance")
+        Sground = Variable("S_{ground}", "ft", "ground roll")
         etaprop = Variable("\\eta_{prop}", 0.8, "-", "propellor efficiency")
-        mfac = Variable("m_{fac}", 1.2, "-", "TO distance margin")
+        msafety = Variable("m_{fac}", 1.4, "-", "safety margin")
 
         path = os.path.dirname(os.path.abspath(__file__))
         df = pd.read_csv(path + os.sep + "logfit.csv")
@@ -153,7 +185,8 @@ class TakeOff(Model):
                        / CLto)**0.5,
             fs["V"] == 1.2*Vstall,
             FitCS(fd, zsto, [A/g, B*fs["V"]**2/g]),
-            Sto/mfac >= 1.0/2.0/B*zsto]
+            Sground >= 1.0/2.0/B*zsto,
+            Sto/msafety >= Sground]
 
         if sp:
             with SignomialsEnabled():
@@ -169,10 +202,10 @@ class TakeOff(Model):
         return constraints, fs
 
 if __name__ == "__main__":
-    SP = True
+    SP = False
     M = Mission(sp=SP)
     M.substitutions.update({"S_{runway}": 300})
-    M.cost = M.aircraft.topvar("W")
+    M.cost = 1/M["R"]
     if SP:
         sol = M.localsolve("mosek")
     else:

@@ -29,12 +29,11 @@ class Landing(Model):
 
         CLg = Variable("C_{L_g}", "-", "ground lift coefficient")
         CDg = Variable("C_{D_g}", "-", "grag ground coefficient")
-        #CLmax   = Variable("C_{L_{max}}", 2.5, "-", "max lift coefficient")
         Vstall = Variable("V_{stall}", "knots", "stall velocity")
         Sgr = Variable("S_{gr}", "ft", "landing ground roll")
         Slnd = Variable("S_{land}", "ft", "landing distance")
         etaprop = Variable("\\eta_{prop}", 0.05, "-", "propellor efficiency")
-        lnd_mrg = Variable("m_{fac}", 1.2, "-", "Landing safety margin")
+        msafety = Variable("m_{fac}", 1.4, "-", "Landing safety margin")
         CLland = Variable("C_{L_{land}}", 3.5, "-", "landing CL")
         cdp = Variable("c_{d_{p_{stall}}}", 0.025, "-",
                        "profile drag at Vstallx1.2")
@@ -45,9 +44,9 @@ class Landing(Model):
             Vstall == (2.*aircraft.topvar("W")/fs["\\rho"]/aircraft["S"]
                        / CLland)**0.5,
             fs["V"] >= 1.2*Vstall,
-            Slnd >= lnd_mrg * Sgr,
-            TCS([(B*aircraft.topvar("W")/g + 0.5*fs["\\rho"]*aircraft["S"]*mu*CLland<=
-                  0.5*fs["\\rho"]*aircraft["S"]*CDg)]),
+            Slnd >= msafety*Sgr,
+            TCS([(B*aircraft.topvar("W")/g + 0.5*fs["\\rho"]*aircraft["S"]*mu
+                  * CLland <= 0.5*fs["\\rho"]*aircraft["S"]*CDg)]),
             ]
 
         with SignomialsEnabled():
