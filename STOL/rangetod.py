@@ -52,12 +52,12 @@ def plot_wrange(model, sto, Nr, plot=True):
         model.substitutions.update({"S_{runway}": s})
         del model.substitutions["R"]
         model.cost = 1/model["R"]
-        sol = model.solve("mosek")
+        sol = model.solve("cvxopt")
         Rmax = sol("R").magnitude
         model.cost = model.aircraft.topvar("W")
         R = np.linspace(Rmin, Rmax-10, Nr)
         model.substitutions.update({"R": ("sweep", R)})
-        sol = model.solve("mosek", skipsweepfailures=True)
+        sol = model.solve("cvxopt", skipsweepfailures=True)
 
         if plot:
             W = sol(model.aircraft.topvar("W"))
@@ -108,7 +108,7 @@ def plot_wrange(model, sto, Nr, plot=True):
 
 if __name__ == "__main__":
     M = Mission(sp=False)
-    Figs = plot_wrange(M, [100, 200, 300, 400, 500], 20, plot=True)
+    Figs = plot_wrange(M, [100], 20, plot=True)
     Figs[0].savefig("mtowrangew1200.pdf", bbox_inches="tight")
     Figs[1].savefig("landingsens.pdf", bbox_inches="tight")
     Figs[2].savefig("vrange.pdf", bbox_inches="tight")

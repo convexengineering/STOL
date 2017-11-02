@@ -204,10 +204,12 @@ class TakeOff(Model):
 if __name__ == "__main__":
     SP = False
     M = Mission(sp=SP)
-    M.substitutions.update({"S_{runway}": 300})
-    M.cost = 1/M["R"]
+    M.substitutions.update({"S_{runway}": 500})
+    M.substitutions.update({"R": 150})
+    M.substitutions.update({"W_{pay}": 400})
+    M.cost = M.aircraft.topvar("W")
     if SP:
-        sol = M.localsolve("mosek")
+        sol = M.localsolve("cvxopt")
     else:
-        sol = M.solve("mosek")
+        sol = M.solve("cvxopt")
     print sol.table()

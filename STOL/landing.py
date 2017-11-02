@@ -60,9 +60,9 @@ class Landing(Model):
 
 if __name__ == "__main__":
     ac = testAircraft()
-    M = Landing(ac, sp=True)
+    M = Landing(ac)
     M.cost = M["S_{land}"]
-    sol = M.localsolve("mosek")
+    sol = M.localsolve("mosek_cli")
     #sol = M.debug("mosek")
     print sol.table()
 
