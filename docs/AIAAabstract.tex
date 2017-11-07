@@ -281,7 +281,7 @@ The takeoff ground run distance can then be expressed by taking the integral of 
 
 \begin{equation}
     \label{e:to}
-    S = \frac{1}{2B} \ln{\frac{A}{A-BV^2}} 
+    S_{\mathrm{TO}} = \frac{1}{2B} \ln{\frac{A}{A-BV^2}} 
 \end{equation}
 
 The natural log function can be approximated to make Equation~\ref{e:to} GP-comptible by 
@@ -298,6 +298,41 @@ with an average log error of 0.06\%.  The terms $A$, and $B$, are constrained by
 \end{align}
 
 where the $\mu C_{L_g}$ term is neglected as a conservative approximation for $B$ to preserve GP-compatibility. 
+
+It is assumed that the primary constraint on landing is a comfortable deceleration for passengers.  
+This constraint will drive the wing loading down. 
+
+\begin{equation}
+    S_{\mathrm{land}} \geq \frac{1}{2} \frac{V^2}{Ng} 
+\end{equation}
+
+where $N$ is the acceleration factor such that $N=1$ corresponds to a 1-g deceleration. 
+
+For both the landing and takeoff constraints it is assumed that the velocity has a 20\% margin on the stall velocity,
+
+\begin{equation}
+    V = 1.2V_{\mathrm{stall}} = \sqrt{\frac{2W_{\mathrm{MTO}}}{\rho S C_{L_{max}}}}.
+\end{equation}
+
+An additional margin is placed on the ground roll distance to determine runway length
+
+\begin{align}
+    S_{\mathrm{runway}} &\geq 1.4S_{\mathrm{TO}} \\
+    S_{\mathrm{runway}} &\geq 1.4S_{\mathrm{land}} 
+\end{align}
+
+\subsection{Vehicle Trade Studies}
+
+Using the geometric programming model of a STOL aircraft perviously described, tradeoffs between runway length and vehicle performance were evaulated.  The models consists of a 105 free variables and was solved in 0.114 seconds with an objective function to minimize weight $\min{W_{\mathrm{MTO}}}$. Key parameters are defined in Table~\ref{t:params}.  Some important variables are shown in Table~\ref{t:vars}
+
+\begin{figure}[h!]
+	\begin{center}
+	\includegraphics[width=0.9\textwidth]{capspar.pdf}
+    \caption{\textbf{Cross sectional view of a cap spar.}}
+	\label{f:capspar}
+	\end{center}
+\end{figure}
+
 
 \section{Market Analysis}
 
