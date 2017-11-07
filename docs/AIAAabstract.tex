@@ -84,7 +84,8 @@
   Michael Burton\thanks{Graduate Student, Aeronautics and Astronautics Engineering, MIT, 77 Mass Ave, Cambridge MA, 02139, AIAA Student.}, 
   Patrick Butler\thanks{Graduate Student, Aeronautics and Astronautics Engineering, MIT, 77 Mass Ave, Cambridge MA, 02139, AIAA Student.}, 
   Alison Yu\thanks{Graduate Student, Aeronautics and Astronautics Engineering, MIT, 77 Mass Ave, Cambridge MA, 02139, AIAA Student.}, 
-  John Hansman\thanks{T. Wilson Professor, Aeronautics and Astronautics Engineering, MIT, 77 Mass Ave, Cambridge MA, 02139, AIAA Student.} \\
+ Parker Vascik \thanks{Graduate Student, Aeronautics and Astronautics Engineering, MIT, 77 Mass Ave, Cambridge MA, 02139, AIAA Student.}, 
+  John Hansman\thanks{T. Wilson Professor, Aeronautics and Astronautics Engineering, MIT, 77 Mass Ave, Cambridge MA, 02139, AIAA Member.} \\
   {\normalsize\itshape
    Massachusetts Institute of Technology, Cambridge, 02139, USA}\\
  }
@@ -130,19 +131,64 @@ $c$ \> wing chord \\ %[m] \\
 % \printglossary% creates nomenclature section produced by MakeIndex
 
 \section{Introduction}
-We would like to take this opportunity to distance ourselves from that Brian Seeley guy, and consider this whole urban air mobility concept with some objectivity. 
+Urban Air Mobility (UAM) is a broad concept that refers to a set of related operations and technologies that aim to provide on-demand intra-city and regional air transportation.  UAM concepts of some form or another have been around for at least the past fifty years.  Helicopters have been performing UAM-type missions since the 1960â€™s and have sufficient performance capability to meet nearly all payload, speed, and range requirements of the current UAM mission profile. However, historical helicopter public transportation networks by and large did not succeed and do not exist today due to the high costs of helicopter operation, the high noise generation of these vehicles, and the poor safety record of these aircraft.  Recently, advances in electric vehicle propulsion and key subsystem technologies has opened up the vehicle design space and enabled new approaches to mitigating some of the systemic challenges.  This has sparked renewed interest in the UAM concept and the development of UAM-specific vehicles.  Numerous legacy and emerging aircraft manufacturers are developing vehicles with novel configurations that leverage more-electric or all-electric vehicles and propulsion systems, targeted at this mission space.  
+
+There are a variety of system architectures that are being considered for UAM vehicles. Figure ~\ref{fig:overview} shows some of the most popular options, separated by number of propulsors and method of lift generation.  Of these architecture options, powered-lift distributed electric propulsion (DEP) and rotor-lift DEP are currently the two being most actively pursued. Powered-lift DEP is seen as being especially promising due to its VTOL capability and relatively efficient, high-speed cruise compared to a pure rotorcraft.  Both of these vehicle concepts may have noise benefits compared to conventional helicopters, due to both the lack of engine noise and the design freedom to vary tip speed and disk loading, both of which are key noise drivers. 
+\begin{figure}
+\label{fig:overview}
+\centering
+	\includegraphics[width=0.5\textwidth]{vehicle_architectures.png}
+\caption{Overview of potential UAM aircraft system architectures}
+\end{figure}
+
+However, there are still significant challenges associated with these vehicle architectures.  First, the certification pathway for full-electric, fly-by-wire aircraft are not defined and represent a significant potential delay for produce roll-out in the United States. Secondly, it is unclear that noise can be reduced sufficiently with these configurations to the level that will allow widespread community acceptance.  Finally, the VTOL mission segment, reduced vehicle lift to drag ratio, and fly-by-wire features of these aircraft present significant safety issues that may be complex and costly to mitigate. 
+
+One vehicle architecture which has not been widely considered for the UAM mission is the extremely short takeoff and land (ESTOL) aircraft, which is a fixed-wing aircraft capable of operating off a runway of 100-500ft.  By utilizing the wing throughout all phases of flight, ESTOL aircraft have performance advantages compared to VTOL aircraft of similar payload capacity.  If the runway can be made sufficiently short, the infrastructure differences between VTOL and ESTOL become relatively insignificant, and a useful network of runways can be constructed in close proximity to a major urban area.  ESTOL also has advantages over VTOL in noise and vehicle certification, which are two of the highest barriers to implementation of a function UAM system.  
+
+This research paper conducts an in-depth analysis of the design of an UAM system that features STOL aircraft, considering both infrastructure and vehicle design constraints.  To conduct the vehicle design trade studies, a geometric programming (GP) vehicle sizing and performance model is developed to rapidly and hollistically consider the large design space.  Ground infrastructure and approach path constraints are internalized in this model as design constraints on the aircraft.  This model is exercised to determine feasible bounds on runway operating length, and how vehicle range, speed, and payload capacity trade with ground infrastructure requirements.  
+To assess the ground infrastructure requirements, the current FAA guidance for airport design and approach path layouts is used to create the nominal layout for a STOLport.  The feasibility of locating these STOLports near major urban areas is assessed by looking at case studies of two particular cities, Boston and Los Angeles.  The potential for STOL aircraft to act as a pathway to the development of large-scale UAM systems is reviewed from a technical, operational and business feasibility perspective. Furthermore, the complementary nature of STOL aircraft operations and potential future VTOL UAM operations are hypothesized. As part of this work, previous literature concerning small aircraft transportation system design ~\cite{Viken}, ~\cite{Holmes}, thin-haul transportation vehicles ~\cite{Harish},~\cite{Kreimeier},~\cite{Justin} €, VTOL aircraft ~\cite{Duffy}, and STOL aircraft is considered ~\cite{Antcliff},~\cite{SeeleyIV}. 
+
+\section{Background}
 
 \paragraph{Current Technology} Extremely Short Takeoff and Landing (ESTOL) aircraft are not a new concept.  The Helio Courier, first built in the late 1940s, had demonstrated takeoff and landing distances from 100-300ft.  Highly experienced bush pilots are able to achieve landing distances on the order of single aircraft lengths.  Building aircraft that can operate of extremely short runways is clearly technologically feasible (whether it is commercially viable is an altogether different question).  Nevertheless, ESTOL aircraft technology has not found wide adoption outside of the relatively small community of pilots who routinely fly to remote, relatively unimproved landing areas.   There are inherent challenges in taking existing ESTOL aircraft and using them for operations near major urban areas, which are a result of the design penalties that ESTOL capability drove on the vehicles.  
 For example, current ESTOL vehicles achieve their short field performance through a combination of low wing loading, high power-to-weight, and extensive use of high-lift systems.  The low wing loading means that both maximum and best cruise speeds are fairly low.  Additionally, it makes the vehicles highly sensitive to gusts and turbulence, an important consideration for passenger operations.   The high-lift systems required are also complex (except for impractically low wing loadings), which adds a weight and cost penalty to these vehicles.  Depending on the powerplant type used, the need for high power at takeoff may also reduce the efficiency at the nominal cruising point.  More significantly, these high-power engines generated substantial noise on takeoff; a primary consideration when operating near urban areas. 
 
-\paragraph{Key Enabling Technologies} The introduction of new electric aircraft technologies has the potential to change the paradigm of current ESTOL aircraft and make them practical for use in an Urban Air Mobility (UAM) setting.   In the case of an all-electric aircraft, the reduction in noise through the use of batteries and an electric motor is one key area of improvement.  Another is the use of blown lift with distributed electric propulsion, in a configuration similar to the NASA X-57 Maxwell.  This has the ability to generate very high effective lift coefficients (especially on takeoff), with a reduction in the complexity of the high-lift system required.  This allows in increase in the vehicle wing loading, which improves the cruising speed and range.  
+\paragraph{Key Enabling Technologies} The introduction of new electric aircraft technologies has the potential to change the paradigm of current ESTOL aircraft and make them practical for use in an UAM setting.   In the case of an all-electric aircraft, the reduction in noise through the use of batteries and an electric motor is one key area of improvement.  Another is the use of blown lift with distributed electric propulsion, in a configuration similar to the NASA X-57 Maxwell.  This has the ability to generate very high effective lift coefficients (especially on takeoff), with a reduction in the complexity of the high-lift system required.  This allows in increase in the vehicle wing loading, which improves the cruising speed and range.  
 Additionally, since electric motors can be run above their maximum rated capacity for short periods of time, the weight penalties of installing a high-thrust system that is only needed on takeoff are reduced.  And since most of the motors would be shut down in cruising flight, the propulsion system can be designed to operate at or near peak efficiency throughout most of the mission.  When taken together, these key technologies enable the design of a practical ESTOL vehicle.  The range limitations come mostly from the use of batteries and their poor specific power relative to hydrocarbon fuels; replacing them with a hybrid-electric system could extend the range or reduce vehicle takeoff weight, with associated tradeoffs on noise, emissions, and (likely) direct operating cost.  
  
-\paragraph{Hybrid Electric vs. All Electric} 
+\section{System Design Considerations}
 
+\paragraph{Relationship of ESTOL and VTOL}
+The tradeoff between ESTOL/CTOL and VTOL can be simply summarized as a tradeoff between required infrastructure and vehicle performance.  CTOL vehicles generally have higher performance (for most common definition of performance - range, payload capacity, efficiency) than VTOL vehicles, but  require large amounts of ground infrastructure to takeoff and land.  VTOL aircraft pay a significant performance penalty to minimize the amount of ground infrastructure required. ESTOL aircraft lie somewhere in the middle, less infrastructure and performance than CTOL, but more than VTOL.  
+When considering a future UAM system, it is unlikely that the entire system will consist of only STOL or only VTOL aircraft.  ESTOL, VTOL, and CTOL aircraft all provide different vehicle capabilities and can coexist in a future air transportation network, just as they do today.  For the UAM concept, most of the missions of greatest interest are in the range of 25-75 nmi, with a loading of 1-6 passengers.  These missions will start and/or end in dense urban areas, where CTOL infrastructure cannot be feasibly built.   This mission space can be addressed by either an all-electric ESTOL or VTOL vehicle. ESTOL vehicles have an advantage for longer ranges or higher payloads, while VTOL vehicles have an advantage with highly constrained infrastructure or very short ranges. In a future, fully implemented UAM network that realizes the goal of increased personal mobility and regional connection, there will be a strong demand for both types of capability.  As the underlying technologies mature (batteries, propulsions systems, and vehicle autonomy), both classes of aircraft will increase proportionally in capability, and the capacity of the system as a whole will increase.  The relative advantages of ESTOL and VTOL will likely remain similar.  
 
+\paragraph{The Context of UAM}
+It is important to consider the design of an UAM system and vehicle in the context in which it is expected to operate.  Even the most optimistic projections for the development of a UAM system envision it coming about incrementally over the course of the next 10-30 years, primarily paced by improvements in automation technologies, which will effect both direct vehicle control and overall traffic system management.  In this timeframe, there are other transformative transportation technologies on the horizon; semi- and fully- autonomous ground vehicles, Hyperloop systems, and low-cost tunnels to increase road capacity are all technologies being seriously developed that impact the urban mobility market.  It is important to consider how a future air transportation network would interact with and complement all these technologies.  Making most cars autonomous or semi-autonomous may have a much larger impact on surface congestion than replacing a small percentage of car trips with aircraft trips.  For moving large numbers of people short-range point-to-point, tunnels or other high-speed ground infrastructure may be more appropriate than air travel of any kind.  The value proposition of urban air mobility is in how it complements existing and future transportation infrastructure, and enables new connections to be made to existing high-throughput ground systems.  
+
+\paragraph{Near-term Advantages of ESTOL}
+While ESTOL and VTOL aircraft will both be useful in a future UAM network, there are several advantages to developing ESTOL aircraft before VTOL aircraft.  These advantages can be broadly grouped in three categories; regulatory, vehicle, and strategic.  
+From a regulatory perspective, ESTOL is advantages because there is an existing framework for the certification of these types of vehicles.  It is a known configuration, and with the possible exception of the all-electric powertrain can be readily certified under the existing regulatory framework.  Certification of a distributed electric propulsion eSTOL vehicle will advance the technology that underlies VTOL aircraft, and provide a basis for the certification of all future DEP aircraft, within an existing framework.  Additionally, since eESTOL aircraft may not require a fly-by-wire system (at least for initial piloted configurations), the certification process is simpler and more streamlined.  
+From a vehicle perspective, the advantages of STOL are mostly in performance.  Notably, it allows a higher ratio of pilots to passengers, which could be a critical consideration in early system implementations before vehicle autonomy is fully developed.  It also has advantages in range, and potentially in cost.  
+However, the main advantages of ESTOL are strategic, in that it minimizes the risks in implementing a new type of air transportation system.  Proof-of-concept vehicles with useful performance characteristics exist.  It advances the underlying UAM technologies within a framework that is achievable to the regulatory and operational management agencies.  ESTOL vehicles are quieter than VTOL aircraft, especially on approach, which may mitigate one of the primary barriers to adoption of the system.  Additionally, by focusing on slightly longer range regional transit networks, the system may be accessible and useful to a larger percentage of the people living near urban centers who are affected by the negative externalities of the system.  That population may be more accepting of the existing of the system if they can benefit from it.
 
 \section{Infrastructure}
+\begin{figure}[!htbp]
+\label{fig:stolport}
+\centering
+	\includegraphics[width=0.5\textwidth]{STOLport_300_nominal.eps}
+\caption{The layout of a notional STOLA}
+\end{figure}
+
+Figure ~\ref{fig:stolport} shows the layout of a notional short takeoff and landing area (STOLA) for a 300ft runway length, taking into account current FAA guidance on runway clearance and centerline separation for runways and taxiways.  This assumes that the vehicles will have an approach reference speed of less than 50 kts.  This layout is notional and is affected by vehicle approach speed and wingspan. 
+
+A key part of the feasibility of an UAM concept is dual-use takeoff and landing areas (TOLA), whether for STOL or VTOL vehicles.   Due to the high value and scarcity of undeveloped urban real-estate, single-use UAM infrastructure is likely to be cost-prohibitive.  Considerations for various types of STOLAs are shown in ~\ref{stola_key}, showing layouts for STOLAs over roads, railways, barges, and buildings. 
+\begin{figure}[!htbp]
+\label{fig:stola_key}
+\centering
+	\includegraphics[width=1\textwidth]{STOLport_key.jpg}
+\caption{Notional STOLport layouts for various locations}
+\end{figure}
+Future work will lay out more fully the design constraints of a notional STOLport, how the throughput is constrained by various systemic factors (vehicle separation, charging time/infrastructure, ground access, passenger loading times), and how that is reflected in the vehicle design. 
 
 \section{Vehicle Feasibility}
 
@@ -254,6 +300,16 @@ with an average log error of 0.06\%.  The terms $A$, and $B$, are constrained by
 where the $\mu C_{L_g}$ term is neglected as a conservative approximation for $B$ to preserve GP-compatibility. 
 
 \section{Market Analysis}
+
+The first case study is the layout of an ESTOL UAM network in Boston, shown in Figure ~\ref{fig:bos_network}.  This shows places where it may be feasible to locate a STOLA, normally focused on dual-use infrastructre.  These locations are chosen both so that they are near existing noise sources, away from dense residential areas, and connect to the existing high-throughput ground transportation networks.  
+\begin{figure}[!htbp]
+\label{fig:bos_network}
+\centering
+	\includegraphics[width=1\textwidth]{boston_layout.png}
+\caption{Example layout of a STOL UAM network in Boston}
+\end{figure}
+
+
 
 \section{Conclusion}
 
