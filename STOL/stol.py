@@ -8,6 +8,7 @@ from gpfit.fit_constraintset import FitCS
 from flightstate import FlightState
 from landing import Landing
 from gpkit.constraints.tight import Tight as TCS
+from gpkit.constraints.relax import ConstantsRelaxed
 
 # pylint: disable=too-many-locals, invalid-name, unused-variable
 
@@ -33,14 +34,12 @@ class Aircraft(Model):
                            "structural weight fraction")
         Wstruct = Variable("W_{struct}", "lbf", "structural weight")
         e = Variable("e", 0.8, "-", "span efficiency factor")
-        bmax = Variable("b", 50, "ft", "span constraint")
 
         constraints = [
             TCS([W >= Wbatt + Wpay + self.wing.topvar("W") + Wmotor + Wstruct]),
             Wcent >= Wbatt + Wpay + Wmotor + Wstruct,
             Wstruct >= fstruct*W,
             Wmotor >= Pshaftmax/sp_motor,
-            self.wing["b"] <= bmax
             ]
 
         loading = self.wing.loading(self.wing, Wcent)
@@ -74,7 +73,7 @@ class Cruise(Model):
 
         perf = aircraft.flight_model()
 
-        R = Variable("R", 200, "nmi", "aircraft range")
+        R = Variable("R", 100, "nmi", "aircraft range")
         g = Variable("g", 9.81, "m/s**2", "gravitational constant")
         T = Variable("T", "lbf", "thrust")
         Vmin = Variable("V_{min}", 120, "kts", "min speed")
@@ -92,7 +91,7 @@ class Cruise(Model):
 
         return constraints, perf
 
-class LandingSimple(Model):
+class GLanding(Model):
     def setup(self, aircraft):
 
         fs = FlightState()
@@ -135,7 +134,7 @@ class Mission(Model):
             constraints.extend([Srunway >= landing["S_{land}"]])
             mission.extend([landing])
         else:
-            landing = LandingSimple(self.aircraft)
+            landing = GLanding(self.aircraft)
             constraints.extend([Srunway >= landing["S_{land}"]])
             mission.extend([landing])
 
@@ -204,10 +203,8 @@ class TakeOff(Model):
 if __name__ == "__main__":
     SP = False
     M = Mission(sp=SP)
-    M.substitutions.update({"S_{runway}": 500})
-    M.substitutions.update({"R": 150})
-    M.substitutions.update({"W_{pay}": 400})
-    M.cost = M.aircraft.topvar("W")
+    M.substitutions.update({"R": 100, "S_{runway}": 300})
+    M.cost = M[M.aircraft.topvar("W")]
     if SP:
         sol = M.localsolve("mosek")
     else:

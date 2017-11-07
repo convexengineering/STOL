@@ -190,7 +190,149 @@ A key part of the feasibility of an UAM concept is dual-use takeoff and landing 
 \end{figure}
 Future work will lay out more fully the design constraints of a notional STOLport, how the throughput is constrained by various systemic factors (vehicle separation, charging time/infrastructure, ground access, passenger loading times), and how that is reflected in the vehicle design. 
 
-\section{Vehicle Design}
+\section{Vehicle Feasibility}
+
+A sizing study using Geometric Programming optimization was performed to understand how vehicle performance and design would be effected by short take offs and landings. 
+This section describes the assumptions and equations used in the optimization model for both the vehicle, cruise performance, and take off models.
+Geometric programming was selected as a means of evaluating this trade space because of its speed and reliability.  
+
+\subsection{Vehicle Model}
+
+It is assumed that the aircraft is completely electric, replying on battery power for powered flight. 
+The aircraft weight is comprised of the battery, payload, wing, motor, and structural weight,
+
+\begin{equation}
+    W_{\mathrm{MTO}} \geq W_{\mathrm{batt}} + W_{\mathrm{pay}} + W_{\mathrm{wing}} + W_{\mathrm{motor}} + W_{\mathrm{struct}}
+\end{equation}
+
+where the motor and structural weights are
+
+\begin{align}
+    W_{\mathrm{motor}} &\geq \frac{P_{\mathrm{shaft-max}}}{P_{\mathrm{spec}}} \\
+    W_{\mathrm{struct}} &\geq W_{\mathrm{MTO}}f_{\mathrm{struct}}.
+\end{align}
+
+The battery weight is constrained by the range of the aircraft
+
+\begin{equation}
+    R \leq \frac{h_{\mathrm{batt}} W_{\mathrm{batt}} \eta_{\mathrm{elec}} V}{gP_{\mathrm{shaft}}}
+\end{equation}
+
+where the shaft power is 
+
+\begin{equation}
+    P_{\mathrm{shaft}} \geq \frac{TV}{\eta_{\mathrm{prop}}}
+\end{equation}
+
+The aircraft is assumed to be in steady level flight during cruise. 
+
+The wing weight is composed of the skin, main spar and additional components
+
+\begin{equation}
+    W_{\mathrm{wing}} &\geq W_{\mathrm{skin}} + W_{\mathrm{spar}} + W_{\mathrm{fadd}}
+\end{equation}
+
+The skin and structural elements are assumed to be carbon fiber.  
+The wing spar configuration is a cap spar with unidirectional carbon fiber caps wrapped in a shear web and separated by a foam core as shown in Figure~\ref{f:capspar}.  
+
+\begin{figure}[h!]
+	\begin{center}
+	\includegraphics[width=0.9\textwidth]{capspar.pdf}
+    \caption{\textbf{Cross sectional view of a cap spar.}}
+	\label{f:capspar}
+	\end{center}
+\end{figure}
+
+The spar dimensions are sized such that the material stresses are not exceeded under a 3.5 g-load,
+
+\begin{equation}
+    \sigma_{\mathrm{CFRP}} \geq \frac{\mathcal{M}_{\mathrm{root}}}{S_{y_{\mathrm{spar}}}}
+\end{equation}
+
+The root wing moment $\mathcal{M}_{\mathrm{root}}$, is calculated assuming a distributed load along the wing span that scales with the local chord.\cite{bending}
+A constant tapered wing is assumed.  
+This wing sizing model leverages the GP wing sizing model used by Burton and Hoburg.\cite{burton_solar_2017} 
+
+A simple drag model is used for the aircraft, 
+
+\begin{equation}
+    C_D \geq CDA + c_{d_p} + \frac{C_L^2}{\pi e AR}.
+\end{equation}
+
+where the profile drag coefficient $c_{d_p}(C_L, Re)$, is calculated from a representative wing polar. 
+The combined drag and wing loading models allow the aspect ratio to be optimized, trading structural integrity with aerodynamic performance. 
+
+\subsection{Takeoff and Landing Models}
+
+The takeoff model was adapted from Raymer's takeoff equations to fit a GP compatible form.  Using equations of motion the takeoff state can be expressed
+
+\begin{equation}
+    T - D - \mu(W_{\mathrm{MTO}} - L) = \frac{W_{\mathrm{MTO}}}{g} \frac{dV}{dt}.
+\end{equation}
+
+This can be simplified to 
+\begin{align}
+    \frac{dV}{dt} &= g \left( \frac{T}{W_{\mathrm{MTO}}} - \mu \right) - \frac{g}{W_{\mathrm{MTO}}} \left( \frac{1}{2} \rho S V^2 (C_{D_g} - \mu C_{L_g})\right) \\
+    \label{e:todiff}
+    \frac{dV}{dt} &= \frac{1}{A-BV^2}
+\end{align}
+
+The takeoff ground run distance can then be expressed by taking the integral of Equation~\ref{e:todiff} to achieve
+
+\begin{equation}
+    \label{e:to}
+    S_{\mathrm{TO}} = \frac{1}{2B} \ln{\frac{A}{A-BV^2}} 
+\end{equation}
+
+The natural log function can be approximated to make Equation~\ref{e:to} GP-comptible by 
+
+\begin{equation}
+    \ln{\frac{A}{A-BV^2}} \approx \num{5.6e-4} A^{-6.04} (BV^2)^{6.04} + 1.0 A^{-0.001} (BV^2)^{0.001} + \num{7.5e-4} A^{-1.276} (BV^2)^{1.275}
+\end{equation}
+
+with an average log error of 0.06\%.  The terms $A$, and $B$, are constrained by
+
+\begin{align}
+    \frac{T}{W_{\mathrm{MTO}}} &\geq \frac{A}{g} + \mu \\
+    B &\geq \frac{g}{W_{\mathrm{MTO}}} \frac{1}{2} \rho S C_{D_g}
+\end{align}
+
+where the $\mu C_{L_g}$ term is neglected as a conservative approximation for $B$ to preserve GP-compatibility. 
+
+It is assumed that the primary constraint on landing is a comfortable deceleration for passengers.  
+This constraint will drive the wing loading down. 
+
+\begin{equation}
+    S_{\mathrm{land}} \geq \frac{1}{2} \frac{V^2}{Ng} 
+\end{equation}
+
+where $N$ is the acceleration factor such that $N=1$ corresponds to a 1-g deceleration. 
+
+For both the landing and takeoff constraints it is assumed that the velocity has a 20\% margin on the stall velocity,
+
+\begin{equation}
+    V = 1.2V_{\mathrm{stall}} = \sqrt{\frac{2W_{\mathrm{MTO}}}{\rho S C_{L_{max}}}}.
+\end{equation}
+
+An additional margin is placed on the ground roll distance to determine runway length
+
+\begin{align}
+    S_{\mathrm{runway}} &\geq 1.4S_{\mathrm{TO}} \\
+    S_{\mathrm{runway}} &\geq 1.4S_{\mathrm{land}} 
+\end{align}
+
+\subsection{Vehicle Trade Studies}
+
+Using the geometric programming model of a STOL aircraft perviously described, tradeoffs between runway length and vehicle performance were evaulated.  The models consists of a 105 free variables and was solved in 0.114 seconds with an objective function to minimize weight $\min{W_{\mathrm{MTO}}}$. Key parameters are defined in Table~\ref{t:params}.  Some important variables are shown in Table~\ref{t:vars}
+
+\begin{figure}[h!]
+	\begin{center}
+	\includegraphics[width=0.9\textwidth]{capspar.pdf}
+    \caption{\textbf{Cross sectional view of a cap spar.}}
+	\label{f:capspar}
+	\end{center}
+\end{figure}
+
 
 \section{Market Analysis}
 
