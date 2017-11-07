@@ -12,6 +12,7 @@ def plot_torange(N, vname, vrange):
 
     model = Mission(sp=False)
     del model.substitutions["R"]
+    model.substitutions["g_{loading}"] = 1.5
     sto = np.linspace(50, 500, N)
 
     clrs = ["#084081", "#0868ac", "#2b8cbe", "#4eb3d3", "#7bccc4"]*5
@@ -85,10 +86,10 @@ def plot_wrange(model, sto, Nr, plot=True):
                 model.aircraft.topvar("W")]
             wair = bst.sample_at(x)[model.aircraft.topvar("W")]
             ax.plot(solR, wair, color=clrs[i],
-                    label="$S_{runwawy} = %d [ft]$" % s)
+                    label="$S_{\\mathrm{runwawy}} = %d [ft]$" % s)
             axv.plot(solR, fbatt, color=clrs[i],
-                     label="$S_{runway} = %d [ft]$" % s)
-            ax.plot(Rknee[-1], wint, marker='o', color="k", markersize=5)
+                     label="$S_{\\mathrm{runway}} = %d [ft]$" % s)
+            # ax.plot(Rknee[-1], wint, marker='o', color="k", markersize=5)
             axv.plot(Rknee[-1], wbint, marker='o', color="k", markersize=5)
             i += 1
 
@@ -112,15 +113,15 @@ def plot_wrange(model, sto, Nr, plot=True):
     return ret
 
 if __name__ == "__main__":
-    M = Mission(sp=False)
-    del M.substitutions["R"]
-    Figs = plot_wrange(M, [50, 100, 200, 350, 500], 10, plot=True)
-    Figs[0].savefig("mtowrangew1200.pdf", bbox_inches="tight")
-    Figs[1].savefig("landingsens.pdf", bbox_inches="tight")
-    Figs[2].savefig("vrange.pdf", bbox_inches="tight")
-    Fig, _ = plot_torange(20, "W_{pay}", [800])
-    Fig.savefig("rangetodwpay.pdf", bbox_inches="tight")
-    Fig, _ = plot_torange(20, "C_{L_{land}}", [3.5, 4.5, 5.5])
+    # M = Mission(sp=False)
+    # del M.substitutions["R"]
+    # Figs = plot_wrange(M, [50, 100, 200, 350, 500], 10, plot=True)
+    # Figs[0].savefig("mtowrangew.pdf", bbox_inches="tight")
+    # Figs[1].savefig("landingsens.pdf", bbox_inches="tight")
+    # Figs[2].savefig("vrange.pdf", bbox_inches="tight")
+    # Fig, _ = plot_torange(20, "W_{pay}", [800])
+    # Fig.savefig("rangetodwpay.pdf", bbox_inches="tight")
+    Fig, _ = plot_torange(20, "C_{L_{land}}", [2.5, 3.5, 4.5])
     Fig.savefig("rangetodclland.pdf", bbox_inches="tight")
-    Fig, _ = plot_torange(20, "C_{L_{TO}}", [3.5, 4.5, 5.5])
+    Fig, _ = plot_torange(20, "C_{L_{TO}}", [2.5, 3.5, 4.5])
     Fig.savefig("rangetodclto.pdf", bbox_inches="tight")

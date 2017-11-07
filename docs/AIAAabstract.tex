@@ -323,16 +323,77 @@ An additional margin is placed on the ground roll distance to determine runway l
 
 \subsection{Vehicle Trade Studies}
 
-Using the geometric programming model of a STOL aircraft perviously described, tradeoffs between runway length and vehicle performance were evaulated.  The models consists of a 105 free variables and was solved in 0.114 seconds with an objective function to minimize weight $\min{W_{\mathrm{MTO}}}$. Key parameters are defined in Table~\ref{t:params}.  Some important variables are shown in Table~\ref{t:vars}
+Using the geometric programming model of a STOL aircraft perviously described, tradeoffs between runway length and vehicle performance were evaulated.  The models consists of a 105 free variables and was solved in 0.114 seconds with an objective function to minimize weight $\min{W_{\mathrm{MTO}}}$. Key parameters are defined in Table~\ref{t:params}.  Some important variables are shown in Table~\ref{t:vars}.
+
+\begin{table}[H]
+    \centering
+    \caption{Design Parameters}
+    \label{t:params}
+    \begin{tabular}{l c}
+    \toprule
+    \toprule
+    Parameter                                   & Value \\ \hline
+    $S_{\mathrm{runway}}$                       & 300 [ft] \\
+    $W_{\mathrm{pay}}$                          & 800 [lbf] \\
+    $\eta_{\mathrm{elec}}$                      & 0.9\\
+    $h_{\mathrm{batt}}$                         & 210 [Whr/kg]\\
+    $P_{\mathrm{spec}}$                         & 0.7136 [kW/N] \\
+    $R$                                         & 100 [nmi] \\
+    $C_{L_{max}}$                               & 3.5 [kts] \\
+    $\eta_{\mathrm{prop}}$                      & 0.8  \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \caption{Design Parameters}
+    \label{t:vars}
+    \begin{tabular}{l c}
+    \toprule
+    \toprule
+    Parameter                                   & Value \\ \hline
+    $W_{\mathrm{MTO}}$                          & 1496 [lbf] \\
+    $W_{\mathrm{batt}}$                         & 278 [lbf] \\
+    $W_{\mathrm{wing}}$                         & 53 [lbf] \\
+    $AR$                                        & 9 \\
+    $b$                                         & 22.3 [ft] \\
+    $V_{\mathrm{stall}}$                        & 48 [kts] \\
+    $(W/S)$                                     & 27 [lbf/ft$^2$] \\
+    \bottomrule
+\end{tabular}
+\end{table}
+
+To understand how range and runway requirements affect vehicle weight, the GP model was solved 30 times in 3.46 seconds.  The results are shown in Figure~\ref{f:mtowrangew}, each point on the graph corresponding to a unique optimization solution or vehicle size.  
+From this study it is observed that for runway lengths greater than about 350 ft, range is the constraining factor for vehicle weight.  
+Conversly, while extemely short runways may be possible, it would come at the cost of vehicle range. 
 
 \begin{figure}[h!]
 	\begin{center}
-	\includegraphics[width=0.9\textwidth]{capspar.pdf}
-    \caption{\textbf{Cross sectional view of a cap spar.}}
-	\label{f:capspar}
+	\includegraphics[width=0.9\textwidth]{mtowrangew.pdf}
+    \caption{\textbf{Trade space of aircraft weight, range and runway length.}}
+	\label{f:mtowrangew}
 	\end{center}
 \end{figure}
 
+Another way to view this trade space is to understand how runway length and range trade for different max lift coefficients.  
+Blow wings, highly cambered airfoils, or deflected wing surfaces can act to achieve higher max lift coefficients.  
+Because the max lift coefficient for landing and takeoff may be different two separate studies were done trading runway distance and vehicle range for different max lift coefficients, shown in Figure~\ref{f:rangetod}.  
+Figure~\ref{f:rangetoclto} shows that higher lift coefficients on takeoff have little effect on the range of the aircraft.  
+This is because the aircraft is constrained by the landing model and not the take off model.  
+In Figure~\ref{f:rangetoclland} the differenet lift coefficient lines converge around runway lengths of 150 ft.  
+Therefore, for runway lengths greater than 150 ft range, not runway distance, becomes the driving requirement. 
+
+\begin{figure}[h!]
+ \begin{subfigmatrix}{2}% number of columns
+     \subfigure[\label{f:rangetodclto}]{\includegraphics[]{rangetodclto.pdf}}
+     \subfigure[\label{f:rangetodclland}]{\includegraphics[]{rangetodclland.pdf}}
+ \end{subfigmatrix}
+ \caption{\textbf{Winds peak at the winter solstice in Southern and Northern Hemispheres.\cite{wind}}}
+ \label{f:windvsmonth}
+\end{figure}
+
+These trade studies, done with simple models, show that there could likely be a realizable design of a short take off and landing vehicle that meets urban infrastructure requirements without a large penalty in performance.
 
 \section{Market Analysis}
 
