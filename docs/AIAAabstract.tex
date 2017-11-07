@@ -122,9 +122,51 @@
 
 \begin{tabbing}
   XXXXXXX \= \kill% this line sets tab stop
-$A$ \> wing aspect ratio \\
+$A$ \> takeoff helper variable \\
+$AR$ \> wing aspect ratio \\
 $b$ \> wing span \\ % [ft] \\
+$B$ \> takeoff helper variable \\
 $c$ \> wing chord \\ %[m] \\
+$C_D$ \> drag coefficient \\
+$CDA$ \> area drag coefficient \\
+$C_{D_g}$ \> ground drag coefficient \\
+$c_{d_p}$ \> wing profile drag coefficient \\
+$C_L$ \> lift coefficient \\
+$C_{L_g}$ \> ground lift coefficient \\
+$C_{L_{\mathrm{max}}}$ \> max lift coefficient \\
+$D$ \> drag \\
+$e$ \> span efficiency \\
+$f_{\mathrm{struct}}$ \> fractional structural weight \\
+$g$ \> gravitational constant \\
+$L$ \> lift \\
+$\mathcal{M}_{\mathrm{root}}$ \> root moment stress \\
+$N$ \> deceleration factor \\
+$P_{\mathrm{shaft-max}}$ \> max shaft power \\
+$P_{\mathrm{specx}}$ \> specific motor power \\
+$Re$ \> Reynolds number \\
+$S$ \> wing area \\
+$S_{\mathrm{land}}$ \> landing ground roll \\
+$S_{\mathrm{runway}}$ \> runway distance \\
+$S_{\mathrm{TO}}$ \> take off ground roll \\
+$S_{y_{\mathrm{spar}}}$ \> spar section modulus \\
+$t$ \> time \\
+$T$ \> thrust \\
+$V$ \> speed \\
+$V_{\mathrm{stall}}$ \> stall speed \\
+$W_{\mathrm{batt}}$ \> battery weight \\
+$W_{\mathrm{fadd}}$ \> additional wing weight\\
+$W_{\mathrm{motor}}$ \> motor weight \\
+$W_{\mathrm{MTO}}$ \> max take off weight \\
+$W_{\mathrm{pay}}$ \> payload weight \\
+$W_{\mathrm{skin}}$ \> wing skin weight \\
+$W_{\mathrm{spar}}$ \> wing spar weight \\
+$W_{\mathrm{struct}}$ \> structural weight \\
+$W_{\mathrm{wing}}$ \> wing weight \\
+$\eta_{\mathrm{elec}}$ \> combined electric efficiency \\
+$\eta_{\mathrm{prop}}$ \> propeller efficiency \\
+$\mu$ \> rolling friction coefficient \\
+$\rho$ \> air density \\
+$\sigma_{\mathrm{CFRP}}$ \> carbon fiber allowable stress \\
  \end{tabbing}
 
 \end{multicols}
@@ -229,7 +271,7 @@ The aircraft is assumed to be in steady level flight during cruise.
 The wing weight is composed of the skin, main spar and additional components
 
 \begin{equation}
-    W_{\mathrm{wing}} &\geq W_{\mathrm{skin}} + W_{\mathrm{spar}} + W_{\mathrm{fadd}}
+    W_{\mathrm{wing}} \geq W_{\mathrm{skin}} + W_{\mathrm{spar}} + W_{\mathrm{fadd}}
 \end{equation}
 
 The skin and structural elements are assumed to be carbon fiber.  
@@ -274,7 +316,7 @@ This can be simplified to
 \begin{align}
     \frac{dV}{dt} &= g \left( \frac{T}{W_{\mathrm{MTO}}} - \mu \right) - \frac{g}{W_{\mathrm{MTO}}} \left( \frac{1}{2} \rho S V^2 (C_{D_g} - \mu C_{L_g})\right) \\
     \label{e:todiff}
-    \frac{dV}{dt} &= \frac{1}{A-BV^2}
+    \frac{dt}{dV} &= \frac{1}{A-BV^2}
 \end{align}
 
 The takeoff ground run distance can then be expressed by taking the integral of Equation~\ref{e:todiff} to achieve
@@ -311,7 +353,7 @@ where $N$ is the acceleration factor such that $N=1$ corresponds to a 1-g decele
 For both the landing and takeoff constraints it is assumed that the velocity has a 20\% margin on the stall velocity,
 
 \begin{equation}
-    V = 1.2V_{\mathrm{stall}} = \sqrt{\frac{2W_{\mathrm{MTO}}}{\rho S C_{L_{max}}}}.
+    V = 1.2V_{\mathrm{stall}} = \sqrt{\frac{2W_{\mathrm{MTO}}}{\rho S C_{L_{\mathrm{max}}}}}.
 \end{equation}
 
 An additional margin is placed on the ground roll distance to determine runway length
@@ -324,6 +366,8 @@ An additional margin is placed on the ground roll distance to determine runway l
 \subsection{Vehicle Trade Studies}
 
 Using the geometric programming model of a STOL aircraft perviously described, tradeoffs between runway length and vehicle performance were evaulated.  The models consists of a 105 free variables and was solved in 0.114 seconds with an objective function to minimize weight $\min{W_{\mathrm{MTO}}}$. Key parameters are defined in Table~\ref{t:params}.  Some important variables are shown in Table~\ref{t:vars}.
+
+\begin{multicols}{2}
 
 \begin{table}[H]
     \centering
@@ -339,7 +383,7 @@ Using the geometric programming model of a STOL aircraft perviously described, t
     $h_{\mathrm{batt}}$                         & 210 [Whr/kg]\\
     $P_{\mathrm{spec}}$                         & 0.7136 [kW/N] \\
     $R$                                         & 100 [nmi] \\
-    $C_{L_{max}}$                               & 3.5 [kts] \\
+    $C_{L_{\mathrm{max}}}$                      & 3.5 [kts] \\
     $\eta_{\mathrm{prop}}$                      & 0.8  \\
     \bottomrule
 \end{tabular}
@@ -364,13 +408,15 @@ Using the geometric programming model of a STOL aircraft perviously described, t
 \end{tabular}
 \end{table}
 
+\end{multicols}
+
 To understand how range and runway requirements affect vehicle weight, the GP model was solved 30 times in 3.46 seconds.  The results are shown in Figure~\ref{f:mtowrangew}, each point on the graph corresponding to a unique optimization solution or vehicle size.  
 From this study it is observed that for runway lengths greater than about 350 ft, range is the constraining factor for vehicle weight.  
 Conversly, while extemely short runways may be possible, it would come at the cost of vehicle range. 
 
 \begin{figure}[h!]
 	\begin{center}
-	\includegraphics[width=0.9\textwidth]{mtowrangew.pdf}
+	\includegraphics[width=0.6\textwidth]{mtowrangew.pdf}
     \caption{\textbf{Trade space of aircraft weight, range and runway length.}}
 	\label{f:mtowrangew}
 	\end{center}
@@ -379,9 +425,9 @@ Conversly, while extemely short runways may be possible, it would come at the co
 Another way to view this trade space is to understand how runway length and range trade for different max lift coefficients.  
 Blow wings, highly cambered airfoils, or deflected wing surfaces can act to achieve higher max lift coefficients.  
 Because the max lift coefficient for landing and takeoff may be different two separate studies were done trading runway distance and vehicle range for different max lift coefficients, shown in Figure~\ref{f:rangetod}.  
-Figure~\ref{f:rangetoclto} shows that higher lift coefficients on takeoff have little effect on the range of the aircraft.  
+Figure~\ref{f:rangetodclto} shows that higher lift coefficients on takeoff have little effect on the range of the aircraft.  
 This is because the aircraft is constrained by the landing model and not the take off model.  
-In Figure~\ref{f:rangetoclland} the differenet lift coefficient lines converge around runway lengths of 150 ft.  
+In Figure~\ref{f:rangetodclland} the differenet lift coefficient lines converge around runway lengths of 150 ft.  
 Therefore, for runway lengths greater than 150 ft range, not runway distance, becomes the driving requirement. 
 
 \begin{figure}[h!]
@@ -389,8 +435,8 @@ Therefore, for runway lengths greater than 150 ft range, not runway distance, be
      \subfigure[\label{f:rangetodclto}]{\includegraphics[]{rangetodclto.pdf}}
      \subfigure[\label{f:rangetodclland}]{\includegraphics[]{rangetodclland.pdf}}
  \end{subfigmatrix}
- \caption{\textbf{Winds peak at the winter solstice in Southern and Northern Hemispheres.\cite{wind}}}
- \label{f:windvsmonth}
+ \caption{\textbf{Runway distance versus range for different maximum lift coefficients. }}
+ \label{f:rangetod}
 \end{figure}
 
 These trade studies, done with simple models, show that there could likely be a realizable design of a short take off and landing vehicle that meets urban infrastructure requirements without a large penalty in performance.
