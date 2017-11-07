@@ -209,7 +209,7 @@ if __name__ == "__main__":
     M.substitutions.update({"W_{pay}": 400})
     M.cost = M.aircraft.topvar("W")
     if SP:
-        sol = M.localsolve("cvxopt")
+        sol = M.localsolve("mosek")
     else:
-        sol = M.solve("cvxopt")
+        sol = M.solve("mosek")
     print sol.table()
