@@ -235,7 +235,7 @@ Future work will lay out more fully the design constraints of a notional STOLpor
 \section{Vehicle Feasibility}
 
 A sizing study using Geometric Programming optimization was performed to understand how vehicle performance and design would be effected by short take offs and landings. 
-This section describes the assumptions and equations used in the optimization model for both the vehicle, cruise performance, and take off models.
+This section describes the assumptions and equations used in the optimization model for vehicle size, cruise performance, and takeoff and landing distances.
 Geometric programming was selected as a means of evaluating this trade space because of its speed and reliability.  
 
 \subsection{Vehicle Model}
@@ -356,7 +356,7 @@ For both the landing and takeoff constraints it is assumed that the velocity has
     V = 1.2V_{\mathrm{stall}} = \sqrt{\frac{2W_{\mathrm{MTO}}}{\rho S C_{L_{\mathrm{max}}}}}.
 \end{equation}
 
-An additional margin is placed on the ground roll distance to determine runway length
+Another 40\% margin is placed on the ground roll distance to determine runway length
 
 \begin{align}
     S_{\mathrm{runway}} &\geq 1.4S_{\mathrm{TO}} \\
@@ -365,7 +365,7 @@ An additional margin is placed on the ground roll distance to determine runway l
 
 \subsection{Vehicle Trade Studies}
 
-Using the geometric programming model of a STOL aircraft perviously described, tradeoffs between runway length and vehicle performance were evaulated.  The models consists of a 105 free variables and was solved in 0.114 seconds with an objective function to minimize weight $\min{W_{\mathrm{MTO}}}$. Key parameters are defined in Table~\ref{t:params}.  Some important variables are shown in Table~\ref{t:vars}.
+Using the geometric programming model of a STOL aircraft perviously described, tradeoffs between runway length and vehicle performance were evaulated.  The models consists of a 105 free variables and was solved in 0.114 seconds with an objective function to minimize weight, $\min{(W_{\mathrm{MTO}})}$. Key parameters are defined in Table~\ref{t:params} and important solution variables are shown in Table~\ref{t:vars}.
 
 \begin{multicols}{2}
 
@@ -424,11 +424,11 @@ Conversly, while extemely short runways may be possible, it would come at the co
 
 Another way to view this trade space is to understand how runway length and range trade for different max lift coefficients.  
 Blow wings, highly cambered airfoils, or deflected wing surfaces can act to achieve higher max lift coefficients.  
-Because the max lift coefficient for landing and takeoff may be different two separate studies were done trading runway distance and vehicle range for different max lift coefficients, shown in Figure~\ref{f:rangetod}.  
+Because the max lift coefficient for landing and takeoff may be different two separate studies were done, trading runway distance and vehicle range for different max lift coefficients, shown in Figure~\ref{f:rangetod}.  
 Figure~\ref{f:rangetodclto} shows that higher lift coefficients on takeoff have little effect on the range of the aircraft.  
 This is because the aircraft is constrained by the landing model and not the take off model.  
-In Figure~\ref{f:rangetodclland} the differenet lift coefficient lines converge around runway lengths of 150 ft.  
-Therefore, for runway lengths greater than 150 ft range, not runway distance, becomes the driving requirement. 
+In Figure~\ref{f:rangetodclland}, the differenet lift coefficient lines converge around runway lengths of 150 ft.  
+Therefore, for runway lengths greater than 150 ft vehicle range, not runway distance, becomes the driving requirement. 
 
 \begin{figure}[h!]
  \begin{subfigmatrix}{2}% number of columns
