@@ -142,7 +142,7 @@ $L$ \> lift \\
 $\mathcal{M}_{\mathrm{root}}$ \> root moment stress \\
 $N$ \> deceleration factor \\
 $P_{\mathrm{shaft-max}}$ \> max shaft power \\
-$P_{\mathrm{specx}}$ \> specific motor power \\
+$P_{\mathrm{spec}}$ \> specific motor power \\
 $Re$ \> Reynolds number \\
 $S$ \> wing area \\
 $S_{\mathrm{land}}$ \> landing ground roll \\
@@ -236,7 +236,12 @@ Future work will lay out more fully the design constraints of a notional STOLpor
 
 A sizing study using Geometric Programming optimization was performed to understand how vehicle performance and design would be effected by short take offs and landings. 
 This section describes the assumptions and equations used in the optimization model for vehicle size, cruise performance, and takeoff and landing distances.
+
 Geometric programming was selected as a means of evaluating this trade space because of its speed and reliability.  
+Geometric programming is a special type of convex, non-linear optimzation.\cite{gp}
+Because it is convex, even GPs with thousands of variables can be solved quickly.\cite{gp}
+Additionally, recent research has shown that GPs can be used to evaulate aircraft design trade spaces.\cite{burton_solar_2017}\cite{gpkit}
+
 
 \subsection{Vehicle Model}
 
@@ -275,7 +280,7 @@ The wing weight is composed of the skin, main spar and additional components
 \end{equation}
 
 The skin and structural elements are assumed to be carbon fiber.  
-The wing spar configuration is a cap spar with unidirectional carbon fiber caps wrapped in a shear web and separated by a foam core as shown in Figure~\ref{f:capspar}.  
+The wing spar configuration is a cap spar with unidirectional carbon fiber caps wrapped in a shear web as shown in Figure~\ref{f:capspar}.  
 
 \begin{figure}[h!]
 	\begin{center}
