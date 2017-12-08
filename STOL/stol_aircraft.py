@@ -11,6 +11,10 @@ class testAircraft(Model):
         S             = Variable("S", 55.17,"ft**2", "wing planform area")
         CL_max        = Variable("C_{L_{max, land}}", 2.5,"-", "Landing CL_max")
         Pshaftmax     = Variable("P_{shaft-max}", 200., "hp", "Maximum shaft power")
+        AR            = Variable("AR", 10, "-", "Aspect ratio")
+        e             = Variable("e", 1, "-", "Span efficiency")
+        
+
         return []
 
 class HelioCourier(Model):
