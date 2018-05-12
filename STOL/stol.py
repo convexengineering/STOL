@@ -300,15 +300,19 @@ class TakeOff(Model):
 
         constraints = [
             T/W >= A/g + mu,
-            T == Pshaftmax*etaprop/fs["V"],
-            FitCS(fd2, CE, [CLto]),
+            T <= Pshaftmax*etaprop/fs["V"],
+            #FitCS(fd2, CE, [CLto]),
+            CE**0.134617 >= 0.186871 * (CLto)**0.440921
+                            + 0.185221 * (CLto)**0.440948
+                            + 0.187784 * (CLto)**0.441144,
             Pshaftmax*etaprop >= 0.5*fs["\\rho"]*fs["V"]**3*S*CE,
             CDg >= 0.024 + cdp + CLto**2/pi/AR/e,
-            Vstall == (2*W/fs["\\rho"]/S/CLto)**0.5,
+            Vstall == (2.*W/fs["\\rho"]/S/CLto)**0.5,
             fs["V"] == fref*Vstall,
             FitCS(fd, zsto, [A/g, B*fs["V"]**2/g]),
             Sground >= 1.0/2.0/B*zsto,
-            Sto >= Sground]
+            Sto >= Sground,
+            CLto <= 10.]
 
         if sp:
             with SignomialsEnabled():
@@ -325,14 +329,14 @@ def baseline(model):
     " sub in baseline parameters "
     model.substitutions.update({
         model.cruise.R: 100, model.cruise.Vmin: 100, model.aircraft.hbatt: 210,
-        model.Srunway: 400,
+        model.Srunway: 7000,
         model.msafety: 1.4,
         model.aircraft.Npax: 5,
         model.aircraft.sp_motor: 7./9.81,
         model.landing.fref: 1.3,
-        model.takeoff.fref: 1.3,
-        model.landing.gload: 0.4, model.takeoff.CLto: 4.0,
-        model.landing.CLland: 3.5})
+        model.takeoff.fref: .7,
+        model.landing.gload: 0.4, #model.takeoff.CLto: 4.0,
+        model.landing.CLland: 10.})
 
 def advanced(model):
     " sub in advanced tech params "
@@ -344,20 +348,20 @@ def advanced(model):
         model.aircraft.sp_motor: 7./9.81*1.2,
         model.landing.fref: 1.1,
         model.takeoff.fref: 1.1,
-        model.landing.gload: 0.7, model.takeoff.CLto: 5.0,
+        model.landing.gload: 0.7, #model.takeoff.CLto: 5.0,
         model.landing.CLland: 4.5})
 
 if __name__ == "__main__":
     SP = False
     M = Mission(sp=SP)
-    M.substitutions.update({M.cruise.R: 100, M.Srunway: 10000})
+    M.substitutions.update({M.cruise.R: 100, M.Srunway: 200})
     M.cost = M[M.aircraft.W]
     #M.cost = M["Cost_per_trip"]
     if SP:
         sol = M.localsolve("mosek")
     else:
-        feas = M.debug("mosek")
-        # sol = M.solve("mosek")
+        #feas = M.debug("mosek")
+        sol = M.solve("mosek")
     print sol.table()
 
     baseline(M)
