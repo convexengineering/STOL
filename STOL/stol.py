@@ -183,9 +183,13 @@ class GLanding(Model):
     Sgr                     [ft]        landing ground roll
     Slnd                    [ft]        landing distance
     msafety     1.4         [-]         Landing safety margin
-    CLland      3.5         [-]         landing CL
+    CLland                  [-]         landing CL
+    CLland_max  7.0         [-]         max landing CL
     Vref                    [kts]       Approach reference speed
     fref        1.3         [-]         stall margin
+    CE                      [-]         jet energy coefficient
+    etaprop     0.8         [-]         propellor efficiency
+
     """
     def setup(self, aircraft):
         exec parse_variables(GLanding.__doc__)
@@ -194,6 +198,7 @@ class GLanding(Model):
 
         S = self.S = aircraft.S
         W = self.W = aircraft.W
+        Pshaftmax = aircraft.Pshaftmax
 
         constraints = [
             Sgr >= 0.5*fs["V"]**2/gload/g,
@@ -201,6 +206,11 @@ class GLanding(Model):
             Slnd >= Sgr,
             fs["V"] >= fref*Vstall,
             Vref == fs["V"],
+            CLland <= CLland_max,
+            CE**0.134617 >= 0.186871 * (CLland)**0.440921
+                            + 0.185221 * (CLland)**0.440948
+                            + 0.187784 * (CLland)**0.441144,
+            Pshaftmax*etaprop >= 0.5*fs["\\rho"]*fs["V"]**3*S*CE,
             ]
 
         return constraints, fs
@@ -272,6 +282,7 @@ class TakeOff(Model):
     Kg          0.04        [-]         ground-effect induced drag parameter
     CLto                    [-]         max lift coefficient
     CE                      [-]         nondimensional power
+    CLto_max    10          [-]         max takeoff cl
     Vstall                  [knots]     stall velocity
     e           0.8         [-]         span efficiency
     zsto                    [-]         take off distance helper variable
@@ -312,7 +323,7 @@ class TakeOff(Model):
             FitCS(fd, zsto, [A/g, B*fs["V"]**2/g]),
             Sground >= 1.0/2.0/B*zsto,
             Sto >= Sground,
-            CLto <= 10.]
+            CLto <= CLto_max]
 
         if sp:
             with SignomialsEnabled():
@@ -334,9 +345,10 @@ def baseline(model):
         model.aircraft.Npax: 5,
         model.aircraft.sp_motor: 7./9.81,
         model.landing.fref: 1.3,
-        model.takeoff.fref: .7,
+        model.takeoff.fref: 1.3,
         model.landing.gload: 0.4, #model.takeoff.CLto: 4.0,
-        model.landing.CLland: 10.})
+        #model.landing.CLland: 10.
+        })
 
 def advanced(model):
     " sub in advanced tech params "
