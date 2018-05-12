@@ -270,7 +270,7 @@ class TakeOff(Model):
     CDg                     [-]         grag ground coefficient
     cdp         0.025       [-]         profile drag at Vstallx1.2
     Kg          0.04        [-]         ground-effect induced drag parameter
-    CLto                    [-]         max lift coefficient
+    CLto        3.5         [-]         max lift coefficient
     CE                      [-]         nondimensional power
     Vstall                  [knots]     stall velocity
     e           0.8         [-]         span efficiency
@@ -301,8 +301,8 @@ class TakeOff(Model):
         constraints = [
             T/W >= A/g + mu,
             T == Pshaftmax*etaprop/fs["V"],
-            FitCS(fd2, CE, [CLto]),
-            Pshaftmax*etaprop >= 0.5*fs["\\rho"]*fs["V"]**3*S*CE,
+            # FitCS(fd2, CE, [CLto]),
+            # Pshaftmax*etaprop >= 0.5*fs["\\rho"]*fs["V"]**3*S*CE,
             CDg >= 0.024 + cdp + CLto**2/pi/AR/e,
             Vstall == (2*W/fs["\\rho"]/S/CLto)**0.5,
             fs["V"] == fref*Vstall,
@@ -356,8 +356,8 @@ if __name__ == "__main__":
     if SP:
         sol = M.localsolve("mosek")
     else:
-        feas = M.debug("mosek")
-        # sol = M.solve("mosek")
+        # feas = M.debug("mosek")
+        sol = M.solve("mosek")
     print sol.table()
 
     baseline(M)
