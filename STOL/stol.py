@@ -339,15 +339,15 @@ class TakeOff(Model):
 def baseline(model):
     " sub in baseline parameters "
     model.substitutions.update({
-        model.cruise.R: 100, model.cruise.Vmin: 100, model.aircraft.hbatt: 210,
-        model.Srunway: 7000,
+        model.cruise.R: 100, model.cruise.Vmin: 100, model.aircraft.hbatt: 150,
+        model.Srunway: 400,
         model.msafety: 1.4,
         model.aircraft.Npax: 5,
         model.aircraft.sp_motor: 7./9.81,
         model.landing.fref: 1.3,
         model.takeoff.fref: 1.3,
-        model.landing.gload: 0.4, #model.takeoff.CLto: 4.0,
-        #model.landing.CLland: 10.
+        model.landing.gload: 0.4, model.takeoff.CLto_max: 6.0,
+        model.landing.CLland: 6.
         })
 
 def advanced(model):
@@ -360,8 +360,8 @@ def advanced(model):
         model.aircraft.sp_motor: 7./9.81*1.2,
         model.landing.fref: 1.1,
         model.takeoff.fref: 1.1,
-        model.landing.gload: 0.7, #model.takeoff.CLto: 5.0,
-        model.landing.CLland: 4.5})
+        model.landing.gload: 0.7, model.takeoff.CLto_max: 10.0,
+        model.landing.CLland: 7.})
 
 if __name__ == "__main__":
     SP = False
