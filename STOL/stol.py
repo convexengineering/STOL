@@ -340,9 +340,9 @@ def baseline(model):
     " sub in baseline parameters "
     model.substitutions.update({
         model.cruise.R: 100, model.cruise.Vmin: 100, model.aircraft.hbatt: 150,
-        model.Srunway: 400,
+        model.Srunway: 300,
         model.msafety: 1.4,
-        model.aircraft.Npax: 5,
+        model.aircraft.Npax: 4,
         model.aircraft.sp_motor: 7./9.81,
         model.landing.fref: 1.3,
         model.takeoff.fref: 1.3,
@@ -354,9 +354,9 @@ def advanced(model):
     " sub in advanced tech params "
     model.substitutions.update({
         model.cruise.R: 100, model.cruise.Vmin: 100, model.aircraft.hbatt: 300,
-        model.Srunway: 200,
+        model.Srunway: 100,
         model.msafety: 1.2,
-        model.aircraft.Npax: 5,
+        model.aircraft.Npax: 4,
         model.aircraft.sp_motor: 7./9.81*1.2,
         model.landing.fref: 1.1,
         model.takeoff.fref: 1.1,
