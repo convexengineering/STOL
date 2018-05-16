@@ -94,10 +94,10 @@ if __name__ == "__main__":
                          zrange=[90, 100, 110],
                          xlabel="Minimum Cruise Speed ($V_{\mathrm{min}}$) [kts]",
                          ylabel="Max Takeoff Weight [lbf]",
-                         xllabel=[126, 110, 92],
+                         xllabel=[112, 95, 70],
                          fsl=14)
     ax.set_xlim([10, 160])
-    ax.fill_between([10, 65], 0, 10000, facecolor="None", edgecolor="k",
+    ax.fill_between([10, 60], 0, 10000, facecolor="None", edgecolor="k",
                     hatch="/", lw=1)
     ax.text(40, 1300, "$V_{\mathrm{cruise}} \geq V_{\mathrm{min}}$\n inactive", ha="center")
     ax.text(110, 1300, "$V_{\mathrm{cruise}} \geq V_{\mathrm{min}}$\n active", ha="center")
