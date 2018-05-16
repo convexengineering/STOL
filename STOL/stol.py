@@ -207,9 +207,8 @@ class GLanding(Model):
             fs["V"] >= fref*Vstall,
             Vref == fs["V"],
             CLland <= CLland_max,
-            CE**0.134617 >= 0.186871 * (CLland)**0.440921
-                            + 0.185221 * (CLland)**0.440948
-                            + 0.187784 * (CLland)**0.441144,
+            CE**0.1 >=  0.780317 * (CLland)**0.251087,
+
             Pshaftmax*etaprop >= 0.5*fs["\\rho"]*fs["V"]**3*S*CE,
             ]
 
@@ -313,9 +312,8 @@ class TakeOff(Model):
             T/W >= A/g + mu,
             T <= Pshaftmax*etaprop/fs["V"],
             #FitCS(fd2, CE, [CLto]),
-            CE**0.134617 >= 0.186871 * (CLto)**0.440921
-                            + 0.185221 * (CLto)**0.440948
-                            + 0.187784 * (CLto)**0.441144,
+            CE**0.1 >= 0.62266 * (CLto)**0.342453,
+
             Pshaftmax*etaprop >= 0.5*fs["\\rho"]*fs["V"]**3*S*CE,
             CDg >= 0.024 + cdp + CLto**2/pi/AR/e,
             Vstall == (2.*W/fs["\\rho"]/S/CLto)**0.5,
